@@ -4,8 +4,10 @@ use crate::error::Error;
 use helium_wallet::wallet::Wallet;
 use image::Luma;
 use log::debug;
+use qr2term::print_qr;
 use qrcode::QrCode;
-use std::path::Path;
+use rustc_serialize::base64::{ToBase64, MIME};
+use std::{fs, fs::File, io::Read, path::Path};
 
 mod error;
 
@@ -38,6 +40,21 @@ async fn main() -> Result<(), Error> {
     let image = code.render::<Luma<u8>>().build();
     let filename = format!("{}_qr.png", pub_key);
     image.save(&filename)?;
+
+    // Save QR code image as base64 to file
+    let path = format!("./{}", &filename);
+    let mut file = File::open(path).unwrap();
+    let mut vec = Vec::new();
+    let _ = file.read_to_end(&mut vec);
+    let mut base64 = vec.to_base64(MIME);
+    base64 = base64.replace("\r\n", "");
+
+    let filename = format!("{}_qr.base64", pub_key);
+    let path = format!("./{}", filename);
+    fs::write(&path, base64)?;
+
+    // Display QR Code in terminal
+    print_qr(&pub_key)?;
 
     Ok(())
 }

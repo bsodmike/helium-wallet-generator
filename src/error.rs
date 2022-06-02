@@ -6,6 +6,7 @@ use qrcode::types::QrError;
 use std::{
     error::Error as StdError,
     fmt::{self, Display},
+    io,
     str::Utf8Error,
 };
 
@@ -105,6 +106,7 @@ impl Error {
             Kind::ImageError => "image error".to_string(),
             Kind::InternalError => "internal error".to_string(),
             Kind::InvalidHeaderValue => "invalid header value".to_string(),
+            Kind::IoError => "io error".to_string(),
             Kind::NetworkError => "network error".to_string(),
             Kind::NotImplementedError => "not implemented error".to_string(),
             Kind::ParsingError => "parsing error".to_string(),
@@ -186,6 +188,8 @@ pub(super) enum Kind {
 
     InvalidHeaderValue,
 
+    IoError,
+
     /// The failure was due to the network client not working properly.
     NetworkError,
 
@@ -221,6 +225,9 @@ impl fmt::Display for Kind {
             }
             Self::InvalidHeaderValue => {
                 write!(f, "InvalidHeaderValue")
+            }
+            Self::IoError => {
+                write!(f, "IoError")
             }
             Self::NetworkError => {
                 write!(f, "NetworkError")
@@ -298,5 +305,11 @@ impl From<QrError> for Error {
 impl From<ImageError> for Error {
     fn from(err: ImageError) -> Self {
         Error::new(Kind::ImageError).with(err)
+    }
+}
+
+impl From<io::Error> for Error {
+    fn from(err: io::Error) -> Self {
+        Error::new(Kind::IoError).with(err)
     }
 }

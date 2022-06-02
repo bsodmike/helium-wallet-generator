@@ -1,3 +1,4 @@
 /target
 src/wallet.key
 wallet.key
+*_qr.*
