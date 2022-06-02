@@ -1,0 +1,29 @@
+[package]
+name = "preorder-5g"
+version = "0.1.0"
+authors = ["Michael de Silva <michael@inertialbox.com"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# helium-wallet = { git = "https://github.com/helium/helium-wallet-rs" }
+helium-wallet = { path = "../helium-wallet-rs/" }
+chrono = {version = "0.4.19", features = ["serde"]}
+dotenv = "0.15.0"
+env_logger = "0.9.0"
+exponential-backoff = "1.1.0"
+futures = "0.3.19"
+hyper = { version = "0.14.16", features = ["full"] }
+hyper-rustls = { version = "0.23.0", features = ["http1", "http2"] }
+log = "0.4.16"
+regex = "1.5.5"
+rustls-native-certs = "0.6.1"
+serde = {version = "1.0.136", features = ["derive"]}
+serde_json = "1.0.79"
+tokio = {version = "1.17.0", features = ["full"]}
+uuid = {version = "0.8.2", features = ["serde", "v4"]}
+async-trait = "0.1.53"
+image-base64 = "0.1.0"
+qrcode = "0.12.0"
+image = "0.23.14"
