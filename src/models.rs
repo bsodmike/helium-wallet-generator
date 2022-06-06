@@ -39,24 +39,8 @@ impl Wallet {
         debug!("Created wallet");
 
         let pub_key: String = keypair.public_key().to_string();
-
-        let code = QrCode::new(&pub_key)?;
-        let image = code.render::<Luma<u8>>().build();
-        let filename = format!("{}_qr.png", pub_key);
-        image.save(&filename)?;
-
-        // Save QR code image as base64 to file
-        let path = format!("./{}", &filename);
-        let mut file = File::open(path).unwrap();
-        let mut vec = Vec::new();
-        let _ = file.read_to_end(&mut vec);
-        let mut base64 = vec.to_base64(MIME);
-        base64 = base64.replace("\r\n", "");
-
-        let filename = format!("{}_qr.base64", pub_key);
-        let path = format!("./{}", filename);
-        fs::write(&path, &base64)?;
-        debug!("Generated QR Code and persisted image data as base64");
+        let image_filename = save_qrcode(&pub_key)?;
+        let base64 = qrcode_to_base64(&pub_key, &image_filename)?;
 
         // Display QR Code in terminal
         print_qr(&pub_key)?;
@@ -66,4 +50,31 @@ impl Wallet {
 
         Ok(self)
     }
+}
+
+/// Save QR code to image
+fn save_qrcode(data: &str) -> Result<String, Error> {
+    let code = QrCode::new(&data)?;
+    let image = code.render::<Luma<u8>>().build();
+    let filename = format!("{}_qr.png", data);
+    image.save(&filename)?;
+
+    Ok(filename)
+}
+
+/// Save QR code image as base64 to file
+fn qrcode_to_base64(pub_key: &str, image_filename: &str) -> Result<String, Error> {
+    let path = format!("./{}", &image_filename);
+    let mut file = File::open(path).unwrap();
+    let mut vec = Vec::new();
+    let _ = file.read_to_end(&mut vec);
+    let mut base64 = vec.to_base64(MIME);
+    base64 = base64.replace("\r\n", "");
+
+    let filename = format!("{}_qr.base64", pub_key);
+    let path = format!("./{}", filename);
+    fs::write(&path, &base64)?;
+    debug!("Generated QR Code and persisted image data as base64");
+
+    Ok(base64)
 }
